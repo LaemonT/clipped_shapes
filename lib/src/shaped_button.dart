@@ -156,6 +156,7 @@ class ShapedButton extends StatelessWidget {
     Widget? child,
   ) =>
       Stack(
+        fit: StackFit.passthrough,
         alignment: Alignment.center,
         children: [
           if (child != null) child,
@@ -198,6 +199,7 @@ class ShapedButton extends StatelessWidget {
     Widget? child,
   ) =>
       Stack(
+        fit: StackFit.passthrough,
         alignment: Alignment.center,
         children: [
           GestureDetector(

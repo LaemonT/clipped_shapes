@@ -121,26 +121,22 @@ class ShapedBox extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      // Use the Center widget to wrap content, otherwise it expands to fill parent
-      Center(
-        child: Container(
-          // Draw shadow
-          decoration: ShapeDecoration(
-            shape: border.copyWith(
-              side: BorderSide.none,
-            ),
-            shadows: shadows,
+  Widget build(BuildContext context) => Container(
+        // Draw shadow
+        decoration: ShapeDecoration(
+          shape: border.copyWith(
+            side: BorderSide.none,
           ),
-          // Draw border
-          foregroundDecoration: ShapeDecoration(
-            shape: border,
-          ),
-          child: ClipPath(
-            clipper: CustomShapeClipper(border: border),
-            clipBehavior: Clip.antiAlias,
-            child: child,
-          ),
+          shadows: shadows,
+        ),
+        // Draw border
+        foregroundDecoration: ShapeDecoration(
+          shape: border,
+        ),
+        child: ClipPath(
+          clipper: CustomShapeClipper(border: border),
+          clipBehavior: Clip.antiAlias,
+          child: child,
         ),
       );
 }

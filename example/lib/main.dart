@@ -35,7 +35,7 @@ class ExamplePage extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 ShapedBox.rounded(
                   radius: BorderRadius.circular(16.0),
