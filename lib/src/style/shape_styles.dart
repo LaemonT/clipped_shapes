@@ -2,6 +2,7 @@ enum ShapedButtonStyle {
   platform,
   material,
   cupertino,
+  custom,
 }
 
 enum RoundedCornerStyle {

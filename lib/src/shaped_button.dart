@@ -8,16 +8,15 @@ import 'style/shape_styles.dart';
 class ShapedButton extends StatelessWidget {
   final ShapedButtonStyle? shapeStyle;
   final ShapedBox shapedBox;
-  final Color? feedbackColor; // Feedback color is always shown with translucent, so it does not covers the contents.
+  final Color? feedbackColor; // No effect in cupertino style, and always shown with translucent.
   final VoidCallback? onPressed;
   final VoidCallback? onLongPressed;
 
   final _onTapDown = ValueNotifier(false); // This is only used by cupertino style button
 
-  // The opacity of the touch response color will be restricted to 60% of original opaque color at maximum
   Color get resolvedFeedbackColor {
-    final color = (feedbackColor ?? Colors.white);
-    return color.withOpacity(color.opacity * 0.2);
+    final color = (feedbackColor ?? Colors.white70);
+    return color.withOpacity(color.opacity * 0.5);
   }
 
   bool get enabled => onPressed != null;
@@ -137,17 +136,17 @@ class ShapedButton extends StatelessWidget {
             return _buildMaterialStyleButton(context, child);
         }
 
-      /// Button with Material style has a splash circle on touch and expand to fill the entire button
+      /// Button with Material style has a splash circle on touch and expand to fill available space
       case ShapedButtonStyle.material:
         return _buildMaterialStyleButton(context, child);
 
-      /// Button with Cupertino style will reduce its opacity on touch and covered by the feedback color
+      /// Button with Cupertino style will reduce its opacity on touch
       case ShapedButtonStyle.cupertino:
         return _buildCupertinoStyleButton(context, child);
 
-      /// Undefined
-      default:
-        throw ('Unsupported type');
+      /// Button with Custom style draws the feedback color on top of the child
+      case ShapedButtonStyle.custom:
+        return _buildCustomStyleButton(context, child);
     }
   }
 
@@ -160,7 +159,7 @@ class ShapedButton extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           if (child != null) child,
-          // Fill the available space in stack
+          // Draw splash above the child, so it does not covered by the child's background
           Positioned.fill(
             child: ClipPath(
               clipper: CustomShapeClipper(border: shapedBox.border),
@@ -170,22 +169,7 @@ class ShapedButton extends StatelessWidget {
                 child: InkWell(
                   splashColor: resolvedFeedbackColor,
                   highlightColor: resolvedFeedbackColor.withOpacity(0.2),
-                  onTapDown: enabled
-                      ? (_) {
-                          _onTapDown.value = true;
-                        }
-                      : null,
-                  onTapCancel: enabled
-                      ? () {
-                          _onTapDown.value = false;
-                        }
-                      : null,
-                  onTap: enabled
-                      ? () {
-                          _onTapDown.value = false;
-                          onPressed?.call();
-                        }
-                      : null,
+                  onTap: onPressed,
                   onLongPress: onLongPressed,
                 ),
               ),
@@ -198,66 +182,65 @@ class ShapedButton extends StatelessWidget {
     BuildContext context,
     Widget? child,
   ) =>
+      ClipPath(
+        clipper: CustomShapeClipper(border: shapedBox.border),
+        clipBehavior: Clip.antiAlias,
+        child: GestureDetector(
+          onTapDown: enabled
+              ? (_) {
+                  _onTapDown.value = true;
+                }
+              : null,
+          onTapUp: enabled
+              ? (_) {
+                  _onTapDown.value = false;
+                }
+              : null,
+          onTapCancel: enabled
+              ? () {
+                  _onTapDown.value = false;
+                }
+              : null,
+          onTap: onPressed,
+          onLongPress: onLongPressed,
+          child: ValueListenableBuilder(
+            valueListenable: _onTapDown,
+            builder: (BuildContext context, bool tapDown, Widget? child) => AnimatedOpacity(
+              opacity: tapDown ? 0.5 : 1.0,
+              curve: Curves.ease,
+              duration: const Duration(milliseconds: 300),
+              child: child,
+            ),
+            child: Container(
+              // Add this to fix that when using Spacer() in child, the occupied space is not clickable
+              color: Colors.transparent,
+              child: child,
+            ),
+          ),
+        ),
+      );
+
+  Widget _buildCustomStyleButton(
+    BuildContext context,
+    Widget? child,
+  ) =>
       Stack(
         fit: StackFit.passthrough,
         alignment: Alignment.center,
         children: [
-          GestureDetector(
-            onTapDown: enabled
-                ? (_) {
-                    _onTapDown.value = true;
-                  }
-                : null,
-            onTapUp: enabled
-                ? (_) {
-                    _onTapDown.value = false;
-                  }
-                : null,
-            onTapCancel: enabled
-                ? () {
-                    _onTapDown.value = false;
-                  }
-                : null,
-            onTap: onPressed,
-            onLongPress: onLongPressed,
-            child: ValueListenableBuilder(
-              valueListenable: _onTapDown,
-              builder: (BuildContext context, bool tapDown, Widget? child) {
-                final isTransparent = resolvedFeedbackColor.opacity == 0.0;
-                final opacityOnTouch = isTransparent ? 0.4 : 0.6;
-                return AnimatedOpacity(
-                  opacity: tapDown ? opacityOnTouch : 1.0,
-                  curve: Curves.decelerate,
-                  duration: Duration(milliseconds: tapDown ? 60 : 160),
-                  child: child,
-                );
-              },
-              child: Container(
-                color: Colors
-                    .transparent, // Add this to fix that when using Spacer() in child, the occupied space is not clickable
-                child: child,
-              ),
-            ),
-          ),
-          // Fill the available space in stack
+          if (child != null) child,
+          // Draw the feedback color above the child
           Positioned.fill(
-            child: IgnorePointer(
-              child: ValueListenableBuilder(
-                valueListenable: _onTapDown,
-                builder: (BuildContext context, bool tapDown, Widget? child) => AnimatedOpacity(
-                  opacity: tapDown ? 1.0 : 0.0,
-                  curve: Curves.decelerate,
-                  duration: Duration(milliseconds: tapDown ? 60 : 160),
-                  child: child,
-                ),
-                child: ClipPath(
-                  clipper: CustomShapeClipper(border: shapedBox.border),
-                  clipBehavior: Clip.antiAlias,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: resolvedFeedbackColor,
-                    ),
-                  ),
+            child: ClipPath(
+              clipper: CustomShapeClipper(border: shapedBox.border),
+              clipBehavior: Clip.antiAlias,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  splashColor: Colors.transparent,
+                  highlightColor: resolvedFeedbackColor,
+                  onTap: onPressed,
+                  onLongPress: onLongPressed,
                 ),
               ),
             ),

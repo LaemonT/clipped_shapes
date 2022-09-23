@@ -1,8 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 
 import '../style/shape_styles.dart';
 
@@ -24,6 +23,7 @@ class BubbleBorder extends OutlinedBorder {
         arrowHeight = arrowHeight ?? 16.0,
         arrowOffset = arrowOffset ?? 0.0,
         borderRadius = borderRadius ?? BorderRadius.circular(16.0),
+        assert(side.strokeAlign == StrokeAlign.inside, 'BubbleBorder only draws the border line inside'),
         super(side: side);
 
   @override
@@ -32,23 +32,15 @@ class BubbleBorder extends OutlinedBorder {
   }
 
   @override
-  ShapeBorder scale(double t) => BubbleBorder(
-        direction: direction,
-        arrowWidth: arrowWidth,
-        arrowHeight: arrowHeight,
-        arrowOffset: arrowOffset,
-        side: side.scale(t),
-        borderRadius: borderRadius,
-      );
-
-  @override
-  Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
-    return _bubblePath(rect.deflate(side.width));
-  }
-
-  @override
-  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
-    return _bubblePath(rect);
+  ShapeBorder scale(double t) {
+    return BubbleBorder(
+      direction: direction,
+      arrowWidth: arrowWidth,
+      arrowHeight: arrowHeight,
+      arrowOffset: arrowOffset,
+      side: side.scale(t),
+      borderRadius: borderRadius * t,
+    );
   }
 
   @override
@@ -71,15 +63,24 @@ class BubbleBorder extends OutlinedBorder {
   }
 
   @override
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
+    return _bubblePath(rect.deflate(side.width));
+  }
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
+    return _bubblePath(rect);
+  }
+
+  @override
   void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
     switch (side.style) {
       case BorderStyle.none:
         break;
       case BorderStyle.solid:
-        canvas.drawPath(
-          _bubblePath(rect.deflate(side.width / 2.0)),
-          side.toPaint(),
-        );
+        final paint = side.toPaint();
+        paint.strokeWidth = side.width * 2;
+        canvas.drawPath(_bubblePath(rect), paint);
     }
   }
 

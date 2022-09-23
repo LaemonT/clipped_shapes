@@ -14,13 +14,9 @@ class CustomShapeClipper extends CustomClipper<Path> {
       width: size.width,
       height: size.height,
     );
-    final resolvedRect = _downsizedRect(rect, border);
-    return border.getOuterPath(resolvedRect);
+    return border.getOuterPath(rect);
   }
 
   @override
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => this != oldClipper;
-
-  // Reduce the clipper size
-  Rect _downsizedRect(Rect rect, OutlinedBorder border) => rect.deflate(border.side.width / 2.0);
 }

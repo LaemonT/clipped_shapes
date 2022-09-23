@@ -1,4 +1,5 @@
 import 'package:clipped_shapes/clipped_shapes.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -37,6 +38,7 @@ class ExamplePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                const SizedBox(height: 20),
                 ShapedBox.rounded(
                   radius: BorderRadius.circular(16.0),
                   borderSide: const BorderSide(
@@ -152,7 +154,7 @@ class ExamplePage extends StatelessWidget {
                 ShapedBox.bubble(
                   borderSide: const BorderSide(
                     color: Colors.redAccent,
-                    width: 4,
+                    width: 3,
                   ),
                   shadows: const [
                     BoxShadow(
@@ -176,14 +178,13 @@ class ExamplePage extends StatelessWidget {
                 ShapedButton.bubble(
                   borderSide: const BorderSide(
                     color: Colors.redAccent,
-                    width: 4,
+                    width: 3,
                   ),
                   shadows: const [
                     BoxShadow(
                       offset: Offset(3, 3),
                     ),
                   ],
-                  shapeStyle: ShapedButtonStyle.material,
                   child: Container(
                     color: Colors.blue,
                     padding: const EdgeInsets.all(8.0),

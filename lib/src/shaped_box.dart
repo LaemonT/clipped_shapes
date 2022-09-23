@@ -121,7 +121,7 @@ class ShapedBox extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) => DecoratedBox(
         // Draw shadow
         decoration: ShapeDecoration(
           shape: border.copyWith(
@@ -129,14 +129,17 @@ class ShapedBox extends StatelessWidget {
           ),
           shadows: shadows,
         ),
-        // Draw border
-        foregroundDecoration: ShapeDecoration(
-          shape: border,
-        ),
         child: ClipPath(
           clipper: CustomShapeClipper(border: border),
           clipBehavior: Clip.antiAlias,
-          child: child,
+          child: DecoratedBox(
+            // Draw border
+            decoration: ShapeDecoration(
+              shape: border,
+            ),
+            position: DecorationPosition.foreground,
+            child: child,
+          ),
         ),
       );
 }
