@@ -201,6 +201,39 @@ class ExamplePage extends StatelessWidget {
                     print('ShapedButton onPressed');
                   },
                 ),
+                const Divider(height: 40, thickness: 2, indent: 64, endIndent: 64),
+                ShapedBox.circle(
+                  borderSide: const BorderSide(
+                    color: Colors.orange,
+                    width: 1.6,
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'ShapedBox.circle\nExample',
+                      style: TextStyle(color: Colors.orange),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ShapedButton.circle(
+                  borderSide: const BorderSide(
+                    color: Colors.orange,
+                    width: 1.6,
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'ShapedBox.circle\nExample',
+                      style: TextStyle(color: Colors.orange),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  onPressed: () {
+                    print('ShapedButton onPressed');
+                  },
+                ),
               ],
             ),
           ),
