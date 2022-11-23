@@ -121,25 +121,29 @@ class ShapedBox extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-        // Draw shadow
-        decoration: ShapeDecoration(
-          shape: border.copyWith(
-            side: BorderSide.none,
-          ),
-          shadows: shadows,
-        ),
-        child: ClipPath(
-          clipper: CustomShapeClipper(border: border),
-          clipBehavior: Clip.antiAlias,
-          child: DecoratedBox(
-            // Draw border
-            decoration: ShapeDecoration(
-              shape: border,
+  Widget build(BuildContext context) => shadows != null
+      ? DecoratedBox(
+          // Draw shadow
+          decoration: ShapeDecoration(
+            shape: border.copyWith(
+              side: BorderSide.none,
             ),
-            position: DecorationPosition.foreground,
-            child: child,
+            shadows: shadows,
           ),
+          child: _buildClipped(),
+        )
+      : _buildClipped();
+
+  Widget _buildClipped() => ClipPath(
+        clipper: CustomShapeClipper(border: border),
+        clipBehavior: Clip.antiAlias,
+        child: DecoratedBox(
+          // Draw border
+          decoration: ShapeDecoration(
+            shape: border,
+          ),
+          position: DecorationPosition.foreground,
+          child: child,
         ),
       );
 }
