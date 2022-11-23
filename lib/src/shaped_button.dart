@@ -186,6 +186,7 @@ class ShapedButton extends StatelessWidget {
         clipper: CustomShapeClipper(border: shapedBox.border),
         clipBehavior: Clip.antiAlias,
         child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTapDown: enabled
               ? (_) {
                   _onTapDown.value = true;
