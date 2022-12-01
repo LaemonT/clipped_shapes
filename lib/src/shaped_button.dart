@@ -156,7 +156,14 @@ class ShapedButton extends StatelessWidget {
                   child: _buildShadow(null),
                 ),
               ),
-              Container(
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                decoration: ShapeDecoration(
+                  shape: _shapedBox.border.copyWith(
+                    side: BorderSide.none,
+                  ),
+                  color: tapDown ? Colors.grey.withOpacity(0.2) : Colors.transparent,
+                ),
                 child: child,
               ),
             ],
