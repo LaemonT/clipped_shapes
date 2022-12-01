@@ -7,11 +7,11 @@ import 'style/shape_styles.dart';
 
 class ShapedButton extends StatelessWidget {
   final ShapedButtonStyle? shapeStyle;
-  final ShapedBox shapedBox;
   final Color? feedbackColor; // No effect in cupertino style, and always shown with translucent.
   final VoidCallback? onPressed;
   final VoidCallback? onLongPressed;
 
+  final ShapedBox _shapedBox;
   final _onTapDown = ValueNotifier(false); // This is only used by cupertino style button
 
   Color get resolvedFeedbackColor {
@@ -32,7 +32,7 @@ class ShapedButton extends StatelessWidget {
     this.feedbackColor,
     required this.onPressed,
     this.onLongPressed,
-  })  : shapedBox = ShapedBox.rounded(
+  })  : _shapedBox = ShapedBox.rounded(
           radius: radius,
           borderSide: borderSide,
           cornerStyle: cornerStyle,
@@ -50,7 +50,7 @@ class ShapedButton extends StatelessWidget {
     this.feedbackColor,
     required this.onPressed,
     this.onLongPressed,
-  })  : shapedBox = ShapedBox.stadium(
+  })  : _shapedBox = ShapedBox.stadium(
           borderSide: borderSide,
           shadows: shadows,
           child: child,
@@ -66,7 +66,7 @@ class ShapedButton extends StatelessWidget {
     this.feedbackColor,
     required this.onPressed,
     this.onLongPressed,
-  })  : shapedBox = ShapedBox.oval(
+  })  : _shapedBox = ShapedBox.oval(
           borderSide: borderSide,
           shadows: shadows,
           child: child,
@@ -82,7 +82,7 @@ class ShapedButton extends StatelessWidget {
     this.feedbackColor,
     required this.onPressed,
     this.onLongPressed,
-  })  : shapedBox = ShapedBox.circle(
+  })  : _shapedBox = ShapedBox.circle(
           borderSide: borderSide,
           shadows: shadows,
           child: child,
@@ -103,7 +103,7 @@ class ShapedButton extends StatelessWidget {
     this.feedbackColor,
     required this.onPressed,
     this.onLongPressed,
-  })  : shapedBox = ShapedBox.bubble(
+  })  : _shapedBox = ShapedBox.bubble(
           direction: direction,
           arrowWidth: arrowWidth,
           arrowHeight: arrowHeight,
@@ -116,53 +116,105 @@ class ShapedButton extends StatelessWidget {
         super(key: key);
 
   @override
-  Widget build(BuildContext context) => ValueListenableBuilder(
-        valueListenable: _onTapDown,
-        builder: (BuildContext context, bool tapDown, Widget? child) => _buildButton(context, child),
-        child: shapedBox,
-      );
-
-  Widget _buildButton(
-    BuildContext context,
-    Widget? child,
-  ) {
+  Widget build(BuildContext context) {
     switch (shapeStyle ?? ShapedButtonStyle.platform) {
       case ShapedButtonStyle.platform:
         switch (defaultTargetPlatform) {
           case TargetPlatform.iOS:
           case TargetPlatform.macOS:
-            return _buildCupertinoStyleButton(context, child);
+            return _buildCupertinoStyleButton(context);
           default:
-            return _buildMaterialStyleButton(context, child);
+            return _buildMaterialStyleButton(context);
         }
-
-      /// Button with Material style has a splash circle on touch and expand to fill available space
-      case ShapedButtonStyle.material:
-        return _buildMaterialStyleButton(context, child);
 
       /// Button with Cupertino style will reduce its opacity on touch
       case ShapedButtonStyle.cupertino:
-        return _buildCupertinoStyleButton(context, child);
+        return _buildCupertinoStyleButton(context);
+
+      /// Button with Material style has a splash circle on touch and expand to fill available space
+      case ShapedButtonStyle.material:
+        return _buildMaterialStyleButton(context);
 
       /// Button with Custom style draws the feedback color on top of the child
       case ShapedButtonStyle.custom:
-        return _buildCustomStyleButton(context, child);
+        return _buildCustomStyleButton(context);
     }
   }
 
-  Widget _buildMaterialStyleButton(
-    BuildContext context,
-    Widget? child,
-  ) =>
-      Stack(
+  Widget _buildCupertinoStyleButton(BuildContext context) => _shapedBox.shadows != null
+      ? ValueListenableBuilder(
+          valueListenable: _onTapDown,
+          builder: (BuildContext context, bool tapDown, Widget? child) => Stack(
+            fit: StackFit.passthrough,
+            alignment: Alignment.center,
+            children: [
+              Positioned.fill(
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 300),
+                  opacity: tapDown ? 0.0 : 1.0,
+                  curve: Curves.ease,
+                  child: _buildShadow(null),
+                ),
+              ),
+              Container(
+                child: child,
+              ),
+            ],
+          ),
+          child: _buildCupertinoButton(context),
+        )
+      : _buildCupertinoButton(context);
+
+  Widget _buildCupertinoButton(BuildContext context) => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: enabled
+            ? (_) {
+                _onTapDown.value = true;
+              }
+            : null,
+        onTapUp: enabled
+            ? (_) {
+                _onTapDown.value = false;
+              }
+            : null,
+        onTapCancel: enabled
+            ? () {
+                _onTapDown.value = false;
+              }
+            : null,
+        onTap: onPressed,
+        onLongPress: onLongPressed,
+        child: ValueListenableBuilder(
+          valueListenable: _onTapDown,
+          builder: (BuildContext context, bool tapDown, Widget? child) => AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: tapDown ? 0.5 : 1.0,
+            curve: Curves.ease,
+            child: child,
+          ),
+          child: Container(
+            // Add this to fix that when using Spacer() in child, the occupied space is not clickable
+            color: Colors.transparent,
+            child: _buildClipped(_shapedBox.child),
+          ),
+        ),
+      );
+
+  Widget _buildMaterialStyleButton(BuildContext context) => _shapedBox.shadows != null
+      ? _buildShadow(
+          _buildMaterialButton(context),
+        )
+      : _buildMaterialButton(context);
+
+  Widget _buildMaterialButton(BuildContext context) => Stack(
         fit: StackFit.passthrough,
         alignment: Alignment.center,
         children: [
-          if (child != null) child,
+          _buildClipped(_shapedBox.child),
           // Draw splash above the child, so it does not covered by the child's background
           Positioned.fill(
             child: ClipPath(
-              clipper: CustomShapeClipper(border: shapedBox.border),
+              clipper: CustomShapeClipper(border: _shapedBox.border),
               clipBehavior: Clip.antiAlias,
               child: Material(
                 color: Colors.transparent,
@@ -178,62 +230,21 @@ class ShapedButton extends StatelessWidget {
         ],
       );
 
-  Widget _buildCupertinoStyleButton(
-    BuildContext context,
-    Widget? child,
-  ) =>
-      ClipPath(
-        clipper: CustomShapeClipper(border: shapedBox.border),
-        clipBehavior: Clip.antiAlias,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTapDown: enabled
-              ? (_) {
-                  _onTapDown.value = true;
-                }
-              : null,
-          onTapUp: enabled
-              ? (_) {
-                  _onTapDown.value = false;
-                }
-              : null,
-          onTapCancel: enabled
-              ? () {
-                  _onTapDown.value = false;
-                }
-              : null,
-          onTap: onPressed,
-          onLongPress: onLongPressed,
-          child: ValueListenableBuilder(
-            valueListenable: _onTapDown,
-            builder: (BuildContext context, bool tapDown, Widget? child) => AnimatedOpacity(
-              opacity: tapDown ? 0.5 : 1.0,
-              curve: Curves.ease,
-              duration: const Duration(milliseconds: 300),
-              child: child,
-            ),
-            child: Container(
-              // Add this to fix that when using Spacer() in child, the occupied space is not clickable
-              color: Colors.transparent,
-              child: child,
-            ),
-          ),
-        ),
-      );
+  Widget _buildCustomStyleButton(BuildContext context) => _shapedBox.shadows != null
+      ? _buildShadow(
+          _buildCustomButton(context),
+        )
+      : _buildCustomButton(context);
 
-  Widget _buildCustomStyleButton(
-    BuildContext context,
-    Widget? child,
-  ) =>
-      Stack(
+  Widget _buildCustomButton(BuildContext context) => Stack(
         fit: StackFit.passthrough,
         alignment: Alignment.center,
         children: [
-          if (child != null) child,
+          _buildClipped(_shapedBox.child),
           // Draw the feedback color above the child
           Positioned.fill(
             child: ClipPath(
-              clipper: CustomShapeClipper(border: shapedBox.border),
+              clipper: CustomShapeClipper(border: _shapedBox.border),
               clipBehavior: Clip.antiAlias,
               child: Material(
                 color: Colors.transparent,
@@ -247,5 +258,28 @@ class ShapedButton extends StatelessWidget {
             ),
           ),
         ],
+      );
+
+  Widget _buildShadow(Widget? child) => DecoratedBox(
+        decoration: ShapeDecoration(
+          shape: _shapedBox.border.copyWith(
+            side: BorderSide.none,
+          ),
+          shadows: _shapedBox.shadows,
+        ),
+        child: child,
+      );
+
+  Widget _buildClipped(Widget? child) => ClipPath(
+        clipper: CustomShapeClipper(border: _shapedBox.border),
+        clipBehavior: Clip.antiAlias,
+        child: DecoratedBox(
+          // Draw border
+          decoration: ShapeDecoration(
+            shape: _shapedBox.border,
+          ),
+          position: DecorationPosition.foreground,
+          child: child,
+        ),
       );
 }

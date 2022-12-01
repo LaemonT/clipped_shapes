@@ -1,7 +1,7 @@
 enum ShapedButtonStyle {
   platform,
-  material,
   cupertino,
+  material,
   custom,
 }
 
