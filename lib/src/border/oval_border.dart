@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 
-class OvalBorder extends OutlinedBorder {
-  const OvalBorder({BorderSide side = BorderSide.none}) : super(side: side);
+class _OvalBorder extends OutlinedBorder {
+  const _OvalBorder({BorderSide side = BorderSide.none}) : super(side: side);
 
   @override
   EdgeInsetsGeometry get dimensions {
@@ -10,7 +10,7 @@ class OvalBorder extends OutlinedBorder {
   }
 
   @override
-  ShapeBorder scale(double t) => OvalBorder(side: side.scale(t));
+  ShapeBorder scale(double t) => _OvalBorder(side: side.scale(t));
 
   @override
   Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
@@ -23,8 +23,8 @@ class OvalBorder extends OutlinedBorder {
   }
 
   @override
-  OvalBorder copyWith({BorderSide? side}) {
-    return OvalBorder(side: side ?? this.side);
+  _OvalBorder copyWith({BorderSide? side}) {
+    return _OvalBorder(side: side ?? this.side);
   }
 
   @override
@@ -43,7 +43,7 @@ class OvalBorder extends OutlinedBorder {
   @override
   bool operator ==(Object other) {
     if (other.runtimeType != runtimeType) return false;
-    return other is OvalBorder && other.side == side;
+    return other is _OvalBorder && other.side == side;
   }
 
   @override

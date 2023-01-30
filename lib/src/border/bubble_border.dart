@@ -23,7 +23,7 @@ class BubbleBorder extends OutlinedBorder {
         arrowHeight = arrowHeight ?? 16.0,
         arrowOffset = arrowOffset ?? 0.0,
         borderRadius = borderRadius ?? BorderRadius.circular(16.0),
-        assert(side.strokeAlign == StrokeAlign.inside, 'BubbleBorder only draws the border line inside'),
+        assert(side.strokeAlign == BorderSide.strokeAlignInside, 'BubbleBorder only draws the border line inside'),
         super(side: side);
 
   @override
