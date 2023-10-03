@@ -16,9 +16,6 @@ clipped_shapes: ^[latest_version]
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
 ```dart
 const bubbleBtn = ShapedButton.bubble(
   shapeStyle: ShapedButtonStyle.material,
@@ -46,6 +43,6 @@ const bubbleBtn = ShapedButton.bubble(
 );
 ```
 
-## More
+## More Information
 
-You may run the example app in this package and see how it works.
+More examples are available under the `/example` folder. You may run the example app and see how it works.
