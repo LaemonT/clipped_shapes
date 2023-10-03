@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'border/bubble_border.dart';
-import 'border/oval_border.dart';
 import 'clipper/custom_shape_clipper.dart';
 import 'style/shape_styles.dart';
 
