@@ -1,39 +1,51 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Convenient widgets with a shaped border
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+This package provides you with two widgets, the `ShapedBox` and `ShapeButton`.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- `ShapedBox` is a convenient widget that will clip its child widget within the desired shape, and allows you to customise the border easily.
+- `ShapeButton` is the core feature of this package, that is used to provide a quick solution to buttons with a background that eventually blocks the ripple effect on Material buttons.
 
-## Getting started
+## Getting Started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+First add the following line to your pubspec.yaml dependencies:
+```
+clipped_shapes: ^[latest_version]
+```
 
 ## Usage
 
 TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+to `/example` folder.
 
 ```dart
-const like = 'sample';
+const bubbleBtn = ShapedButton.bubble(
+  shapeStyle: ShapedButtonStyle.material,
+  borderSide: const BorderSide(
+    color: Colors.indigo,
+    width: 3,
+  ),
+  shadows: const [
+    BoxShadow(
+      color: Colors.grey,
+      offset: Offset(3, 3),
+      blurRadius: 3,
+    ),
+  ],
+  onPressed: () {},
+  child: Container(
+    color: Colors.redAccent,
+    padding: const EdgeInsets.all(8.0),
+    child: Text(
+      'Simple button',
+      style: TextStyle(color: Colors.white),
+      textAlign: TextAlign.center,
+    ),
+  ),
+);
 ```
 
-## Additional information
+## More
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+You may run the example app in this package and see how it works.
