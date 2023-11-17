@@ -3,10 +3,10 @@
 name: clipped_shapes
 description: Container widgets with a shaped border that crops the content and keeps the touch feedback on the foreground.
 repository: https://github.com/gary6lin/clipped_shapes
-version: 1.0.0
+version: 2.0.0
 
 environment:
-  sdk: '>=2.17.6 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:

@@ -4,6 +4,19 @@ import 'package:flutter/material.dart';
 import '../custom/custom_scaffold.dart';
 
 class BoxScreen extends StatelessWidget {
+  BorderSide get _borderSide => const BorderSide(
+        color: Colors.indigo,
+        width: 3,
+      );
+
+  List<BoxShadow> get _shadows => const [
+        BoxShadow(
+          color: Colors.grey,
+          offset: Offset(3, 3),
+          blurRadius: 3,
+        ),
+      ];
+
   const BoxScreen({Key? key}) : super(key: key);
 
   @override
@@ -12,18 +25,34 @@ class BoxScreen extends StatelessWidget {
         body: Wrap(
           children: [
             ShapedBox.rounded(
+              color: Colors.blueAccent,
+              borderSide: _borderSide,
+              shadows: _shadows,
               child: _buildContent(text: 'ShapedBox.rounded\nExample'),
             ),
             ShapedBox.stadium(
+              color: Colors.blueAccent,
+              borderSide: _borderSide,
+              shadows: _shadows,
               child: _buildContent(text: 'ShapedBox.stadium\nExample'),
             ),
             ShapedBox.oval(
+              color: Colors.blueAccent,
+              borderSide: _borderSide,
+              shadows: _shadows,
               child: _buildContent(text: 'ShapedBox.oval\nExample'),
             ),
             ShapedBox.circle(
-              child: _buildContent(text: 'ShapedBox.circle\nExample'),
+              size: 80,
+              color: Colors.blueAccent,
+              borderSide: _borderSide,
+              shadows: _shadows,
+              child: Center(child: _buildContent(text: 'ShapedBox.circle\nExample')),
             ),
             ShapedBox.bubble(
+              color: Colors.blueAccent,
+              borderSide: _borderSide,
+              shadows: _shadows,
               child: _buildContent(text: 'ShapedBox.bubble\nExample'),
             ),
           ],
@@ -32,11 +61,9 @@ class BoxScreen extends StatelessWidget {
 
   Widget _buildContent({
     required String text,
-    Color color = Colors.blueAccent,
     Color textColor = Colors.white,
   }) =>
-      Container(
-        color: color,
+      Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(
           text,

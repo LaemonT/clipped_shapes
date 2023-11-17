@@ -1,8 +1,68 @@
-enum ShapedButtonStyle {
-  platform,
-  cupertino,
-  material,
-  custom,
+import 'package:flutter/painting.dart';
+
+sealed class ShapedButtonStyle {
+  final Color? color;
+  final VoidCallback? onPressed;
+
+  ShapedButtonStyle({
+    this.color,
+    this.onPressed,
+  });
+}
+
+class ShapedCupertinoButtonStyle extends ShapedButtonStyle {
+  ShapedCupertinoButtonStyle({
+    super.color,
+    super.onPressed,
+  });
+}
+
+class ShapedMaterialButtonStyle extends ShapedButtonStyle {
+  final Color? highlightedColor;
+  final Color? pressedColor;
+  final List<BoxShadow>? shadows;
+  final VoidCallback? onLongPressed;
+
+  ShapedMaterialButtonStyle({
+    super.color,
+    this.highlightedColor,
+    this.pressedColor,
+    this.shadows,
+    super.onPressed,
+    this.onLongPressed,
+  });
+}
+
+class ShapedCustomButtonStyle extends ShapedButtonStyle {
+  final Color? highlightedColor;
+  final Color? pressedColor;
+  final List<BoxShadow>? shadows;
+  final VoidCallback? onLongPressed;
+
+  ShapedCustomButtonStyle({
+    super.color,
+    this.highlightedColor,
+    this.pressedColor,
+    this.shadows,
+    super.onPressed,
+    this.onLongPressed,
+  });
+}
+
+class ShapedPlatformButtonStyle extends ShapedButtonStyle {
+  final Color? highlightedColor;
+  final Color? pressedColor;
+  final List<BoxShadow>? shadows;
+  final VoidCallback? onLongPressed;
+
+  ShapedPlatformButtonStyle({
+    super.color,
+    this.highlightedColor,
+    this.pressedColor,
+    this.shadows,
+    super.onPressed,
+    this.onLongPressed,
+  });
 }
 
 enum RoundedCornerStyle {

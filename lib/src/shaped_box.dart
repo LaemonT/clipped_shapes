@@ -1,148 +1,99 @@
+import 'package:clipped_shapes/src/ext/border_side_ext.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'border/bubble_border.dart';
-import 'clipper/custom_shape_clipper.dart';
 import 'style/shape_styles.dart';
 
 class ShapedBox extends StatelessWidget {
+  final Color? color;
   final OutlinedBorder border;
+  final BorderSide? borderSide;
   final List<BoxShadow>? shadows;
   final Widget? child;
 
   ShapedBox.rounded({
-    Key? key,
-    BorderRadius? radius,
-    BorderSide? borderSide,
+    super.key,
+    this.color,
+    BorderRadius? borderRadius,
+    this.borderSide,
     RoundedCornerStyle cornerStyle = RoundedCornerStyle.circular,
     this.shadows,
-    required this.child,
-  })  : border = cornerStyle == RoundedCornerStyle.circular
+    this.child,
+  }) : border = cornerStyle == RoundedCornerStyle.circular
             ? RoundedRectangleBorder(
-                side: _makeBorderSide(
-                  color: borderSide?.color,
-                  width: borderSide?.width,
-                  style: borderSide?.style,
-                ),
-                borderRadius: radius ?? BorderRadius.circular(8.0),
+                borderRadius: borderRadius ?? BorderRadius.circular(8.0),
               )
             : ContinuousRectangleBorder(
-                side: _makeBorderSide(
-                  color: borderSide?.color,
-                  width: borderSide?.width,
-                  style: borderSide?.style,
-                ),
-                borderRadius: radius ?? BorderRadius.circular(8.0),
-              ),
-        super(key: key);
+                borderRadius: borderRadius ?? BorderRadius.circular(8.0),
+              );
 
-  ShapedBox.stadium({
-    Key? key,
-    BorderSide? borderSide,
+  const ShapedBox.stadium({
+    super.key,
+    this.color,
+    this.borderSide,
     this.shadows,
-    required this.child,
-  })  : border = StadiumBorder(
-          side: _makeBorderSide(
-            color: borderSide?.color,
-            width: borderSide?.width,
-            style: borderSide?.style,
-          ),
-        ),
-        super(key: key);
+    this.child,
+  }) : border = const StadiumBorder();
 
-  ShapedBox.oval({
-    Key? key,
-    BorderSide? borderSide,
+  const ShapedBox.oval({
+    super.key,
+    this.color,
+    this.borderSide,
     this.shadows,
-    required this.child,
-  })  : border = OvalBorder(
-          side: _makeBorderSide(
-            color: borderSide?.color,
-            width: borderSide?.width,
-            style: borderSide?.style,
-          ),
-        ),
-        super(key: key);
+    this.child,
+  }) : border = const OvalBorder();
 
   ShapedBox.circle({
-    Key? key,
-    BorderSide? borderSide,
+    super.key,
+    required double size,
+    this.color,
+    this.borderSide,
     this.shadows,
-    required this.child,
-  })  : border = CircleBorder(
-          side: _makeBorderSide(
-            color: borderSide?.color,
-            width: borderSide?.width,
-            style: borderSide?.style,
-          ),
-        ),
-        super(key: key);
+    Widget? child,
+  })  : border = const CircleBorder(),
+        child = SizedBox(
+          width: size,
+          height: size,
+          child: child,
+        );
 
   ShapedBox.bubble({
-    Key? key,
+    super.key,
     ShapeDirection direction = ShapeDirection.up,
     double? arrowWidth,
     double? arrowHeight,
     double? arrowOffset,
-    BorderRadius? radius,
-    BorderSide? borderSide,
+    this.color,
+    BorderRadius? borderRadius,
+    this.borderSide,
     this.shadows,
-    required this.child,
-  })  : border = BubbleBorder(
+    this.child,
+  }) : border = BubbleBorder(
           direction: direction,
           arrowWidth: arrowWidth,
           arrowHeight: arrowHeight,
           arrowOffset: arrowOffset,
-          side: _makeBorderSide(
+          borderRadius: borderRadius,
+        );
+
+  @override
+  Widget build(BuildContext context) => Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: ShapeDecoration(
+          color: color,
+          shape: border.copyWith(
+            side: BorderSide.none,
+          ),
+          shadows: shadows,
+        ),
+        foregroundDecoration: ShapeDecoration(
+          shape: border.evaluate(
             color: borderSide?.color,
             width: borderSide?.width,
             style: borderSide?.style,
           ),
-          borderRadius: radius,
         ),
-        super(key: key);
-
-  static BorderSide _makeBorderSide({
-    Color? color,
-    double? width,
-    BorderStyle? style,
-  }) {
-    final borderColor = color ?? Colors.black;
-    final borderWidth = width ?? 2.0;
-    final borderStyle = style ?? BorderStyle.none;
-
-    return (borderColor.opacity > 0.0 && borderWidth > 0.0 && borderStyle == BorderStyle.solid)
-        ? BorderSide(
-            color: borderColor,
-            width: borderWidth,
-            style: borderStyle,
-          )
-        : BorderSide.none;
-  }
-
-  @override
-  Widget build(BuildContext context) => shadows != null
-      ? DecoratedBox(
-          // Draw shadow
-          decoration: ShapeDecoration(
-            shape: border.copyWith(
-              side: BorderSide.none,
-            ),
-            shadows: shadows,
-          ),
-          child: _buildClipped(),
-        )
-      : _buildClipped();
-
-  Widget _buildClipped() => ClipPath(
-        clipper: CustomShapeClipper(border: border),
-        clipBehavior: Clip.antiAlias,
-        child: DecoratedBox(
-          // Draw border
-          decoration: ShapeDecoration(
-            shape: border,
-          ),
-          position: DecorationPosition.foreground,
-          child: child,
-        ),
+        child: child,
       );
 }

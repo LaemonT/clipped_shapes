@@ -4,20 +4,24 @@ import 'package:flutter/material.dart';
 import '../custom/custom_scaffold.dart';
 
 class MaterialScreen extends StatelessWidget {
+  const MaterialScreen({Key? key}) : super(key: key);
+
   BorderSide get _borderSide => const BorderSide(
         color: Colors.indigo,
-        width: 3,
+        width: 5,
       );
 
-  List<BoxShadow> get _shadows => const [
-        BoxShadow(
-          color: Colors.grey,
-          offset: Offset(3, 3),
-          blurRadius: 3,
-        ),
-      ];
-
-  const MaterialScreen({Key? key}) : super(key: key);
+  ShapedButtonStyle get _buttonStyle => ShapedMaterialButtonStyle(
+        color: Colors.redAccent,
+        shadows: [
+          const BoxShadow(
+            color: Colors.grey,
+            offset: Offset(3, 3),
+            blurRadius: 3,
+          ),
+        ],
+        onPressed: () {},
+      );
 
   @override
   Widget build(BuildContext context) => CustomScaffold(
@@ -28,39 +32,33 @@ class MaterialScreen extends StatelessWidget {
           runSpacing: 24.0,
           children: [
             ShapedButton.rounded(
-              shapeStyle: ShapedButtonStyle.material,
+              buttonStyle: _buttonStyle,
               borderSide: _borderSide,
-              shadows: _shadows,
-              onPressed: () {},
               child: _buildContent(text: 'ShapedButton.rounded\nExample'),
             ),
             ShapedButton.stadium(
-              shapeStyle: ShapedButtonStyle.material,
+              buttonStyle: _buttonStyle,
               borderSide: _borderSide,
-              shadows: _shadows,
-              onPressed: () {},
               child: _buildContent(text: 'ShapedButton.stadium\nExample'),
             ),
             ShapedButton.oval(
-              shapeStyle: ShapedButtonStyle.material,
+              buttonStyle: _buttonStyle,
               borderSide: _borderSide,
-              shadows: _shadows,
-              onPressed: () {},
               child: _buildContent(text: 'ShapedButton.oval\nExample'),
             ),
             ShapedButton.circle(
-              shapeStyle: ShapedButtonStyle.material,
+              size: 80,
+              buttonStyle: _buttonStyle,
               borderSide: _borderSide,
-              shadows: _shadows,
-              onPressed: () {},
               child: _buildContent(text: 'ShapedButton.circle\nExample'),
             ),
             ShapedButton.bubble(
-              shapeStyle: ShapedButtonStyle.material,
+              buttonStyle: _buttonStyle,
               borderSide: _borderSide,
-              shadows: _shadows,
-              onPressed: () {},
-              child: _buildContent(text: 'ShapedButton.bubble\nExample'),
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: _buildContent(text: 'ShapedButton.bubble\nExample'),
+              ),
             ),
           ],
         ),
@@ -68,11 +66,9 @@ class MaterialScreen extends StatelessWidget {
 
   Widget _buildContent({
     required String text,
-    Color color = Colors.redAccent,
     Color textColor = Colors.white,
   }) =>
-      Container(
-        color: color,
+      Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(
           text,
