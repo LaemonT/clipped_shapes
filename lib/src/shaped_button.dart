@@ -13,7 +13,7 @@ class ShapedButton extends StatelessWidget {
   ShapedButton.rounded({
     super.key,
     BorderRadius? borderRadius,
-    BorderSide? borderSide,
+    BorderSide borderSide = BorderSide.none,
     RoundedCornerStyle cornerStyle = RoundedCornerStyle.circular,
     required Widget child,
     this.buttonStyle,
@@ -26,7 +26,7 @@ class ShapedButton extends StatelessWidget {
 
   ShapedButton.stadium({
     super.key,
-    BorderSide? borderSide,
+    BorderSide borderSide = BorderSide.none,
     required Widget child,
     this.buttonStyle,
   }) : _shapedBox = ShapedBox.stadium(
@@ -36,7 +36,7 @@ class ShapedButton extends StatelessWidget {
 
   ShapedButton.oval({
     super.key,
-    BorderSide? borderSide,
+    BorderSide borderSide = BorderSide.none,
     required Widget child,
     this.buttonStyle,
   }) : _shapedBox = ShapedBox.oval(
@@ -47,7 +47,7 @@ class ShapedButton extends StatelessWidget {
   ShapedButton.circle({
     super.key,
     required double size,
-    BorderSide? borderSide,
+    BorderSide borderSide = BorderSide.none,
     required Widget child,
     this.buttonStyle,
   }) : _shapedBox = ShapedBox.circle(
@@ -63,7 +63,7 @@ class ShapedButton extends StatelessWidget {
     double? arrowHeight,
     double? arrowOffset,
     BorderRadius? borderRadius,
-    BorderSide? borderSide,
+    BorderSide borderSide = BorderSide.none,
     required Widget child,
     this.buttonStyle,
   }) : _shapedBox = ShapedBox.bubble(
@@ -163,41 +163,48 @@ class ShapedButton extends StatelessWidget {
   Widget _buildCustomStyleButton({
     required ShapedCustomButtonStyle style,
   }) {
-    final onColorChange = ValueNotifier(style.color);
-
     final colorNormal = style.color;
     final colorHighlighted = style.highlightedColor ?? colorNormal?.lighten() ?? Colors.white10;
     final colorPressed = style.pressedColor ?? colorNormal?.darken() ?? Colors.black12;
 
+    final colorNormalBorder = _shapedBox.border.side.color;
+    final colorHighlightedBorder = style.highlightedBorderColor ?? colorNormalBorder.lighten();
+    final colorPressedBorder = style.pressedBorderColor ?? colorNormalBorder.darken();
+
+    final onColorChange = ValueNotifier((colorNormal, colorNormalBorder));
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (_) {
-        onColorChange.value = colorPressed;
+        onColorChange.value = (colorPressed, colorPressedBorder);
       },
       onTapUp: (_) {
-        onColorChange.value = colorNormal;
+        onColorChange.value = (colorNormal, colorNormalBorder);
       },
       onTapCancel: () {
-        onColorChange.value = colorNormal;
+        onColorChange.value = (colorNormal, colorNormalBorder);
       },
       onTap: style.onPressed,
       onLongPress: style.onLongPressed,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         onHover: (_) {
-          onColorChange.value = colorHighlighted;
+          onColorChange.value = (colorHighlighted, colorHighlightedBorder);
         },
         onExit: (_) {
-          onColorChange.value = colorNormal;
+          onColorChange.value = (colorNormal, colorNormalBorder);
         },
         child: ValueListenableBuilder(
           valueListenable: onColorChange,
-          builder: (BuildContext context, Color? value, Widget? child) => AnimatedContainer(
+          builder: (BuildContext context, (Color?, Color) value, Widget? child) => AnimatedContainer(
             duration: const Duration(milliseconds: 100),
-            color: value,
-            child: child,
+            color: value.$1,
+            child: _shapedBox.copyWith(
+              borderSide: _shapedBox.border.side.copyWith(
+                color: value.$2,
+              ),
+            ),
           ),
-          child: _shapedBox,
         ),
       ),
     );

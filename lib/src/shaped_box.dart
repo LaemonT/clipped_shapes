@@ -1,4 +1,3 @@
-import 'package:clipped_shapes/src/ext/border_side_ext.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -8,50 +7,58 @@ import 'style/shape_styles.dart';
 class ShapedBox extends StatelessWidget {
   final Color? color;
   final OutlinedBorder border;
-  final BorderSide? borderSide;
   final List<BoxShadow>? shadows;
   final Widget? child;
+
+  const ShapedBox._({
+    this.color,
+    required this.border,
+    this.shadows,
+    this.child,
+  });
 
   ShapedBox.rounded({
     super.key,
     this.color,
     BorderRadius? borderRadius,
-    this.borderSide,
+    BorderSide borderSide = BorderSide.none,
     RoundedCornerStyle cornerStyle = RoundedCornerStyle.circular,
     this.shadows,
     this.child,
   }) : border = cornerStyle == RoundedCornerStyle.circular
             ? RoundedRectangleBorder(
                 borderRadius: borderRadius ?? BorderRadius.circular(8.0),
+                side: borderSide,
               )
             : ContinuousRectangleBorder(
                 borderRadius: borderRadius ?? BorderRadius.circular(8.0),
+                side: borderSide,
               );
 
-  const ShapedBox.stadium({
+  ShapedBox.stadium({
     super.key,
     this.color,
-    this.borderSide,
+    BorderSide borderSide = BorderSide.none,
     this.shadows,
     this.child,
-  }) : border = const StadiumBorder();
+  }) : border = StadiumBorder(side: borderSide);
 
-  const ShapedBox.oval({
+  ShapedBox.oval({
     super.key,
     this.color,
-    this.borderSide,
+    BorderSide borderSide = BorderSide.none,
     this.shadows,
     this.child,
-  }) : border = const OvalBorder();
+  }) : border = OvalBorder(side: borderSide);
 
   ShapedBox.circle({
     super.key,
     required double size,
     this.color,
-    this.borderSide,
+    BorderSide borderSide = BorderSide.none,
     this.shadows,
     Widget? child,
-  })  : border = const CircleBorder(),
+  })  : border = CircleBorder(side: borderSide),
         child = SizedBox(
           width: size,
           height: size,
@@ -66,7 +73,7 @@ class ShapedBox extends StatelessWidget {
     double? arrowOffset,
     this.color,
     BorderRadius? borderRadius,
-    this.borderSide,
+    BorderSide borderSide = BorderSide.none,
     this.shadows,
     this.child,
   }) : border = BubbleBorder(
@@ -75,6 +82,7 @@ class ShapedBox extends StatelessWidget {
           arrowHeight: arrowHeight,
           arrowOffset: arrowOffset,
           borderRadius: borderRadius,
+          side: borderSide,
         );
 
   @override
@@ -88,12 +96,18 @@ class ShapedBox extends StatelessWidget {
           shadows: shadows,
         ),
         foregroundDecoration: ShapeDecoration(
-          shape: border.evaluate(
-            color: borderSide?.color,
-            width: borderSide?.width,
-            style: borderSide?.style,
-          ),
+          shape: border,
         ),
+        child: child,
+      );
+
+  ShapedBox copyWith({
+    BorderSide? borderSide,
+  }) =>
+      ShapedBox._(
+        color: color,
+        border: border.copyWith(side: borderSide),
+        shadows: shadows,
         child: child,
       );
 }

@@ -7,12 +7,13 @@ class CustomScreen extends StatelessWidget {
   const CustomScreen({Key? key}) : super(key: key);
 
   BorderSide get _borderSide => const BorderSide(
-        color: Colors.indigo,
+        color: Colors.blue,
         width: 3,
       );
 
   ShapedButtonStyle get _buttonStyle => ShapedCustomButtonStyle(
-        color: Colors.orange,
+        highlightedBorderColor: Colors.lightBlue,
+        pressedBorderColor: Colors.indigo,
         shadows: [
           const BoxShadow(
             color: Colors.grey,

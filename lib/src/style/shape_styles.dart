@@ -36,6 +36,8 @@ class ShapedMaterialButtonStyle extends ShapedButtonStyle {
 class ShapedCustomButtonStyle extends ShapedButtonStyle {
   final Color? highlightedColor;
   final Color? pressedColor;
+  final Color? highlightedBorderColor;
+  final Color? pressedBorderColor;
   final List<BoxShadow>? shadows;
   final VoidCallback? onLongPressed;
 
@@ -43,6 +45,8 @@ class ShapedCustomButtonStyle extends ShapedButtonStyle {
     super.color,
     this.highlightedColor,
     this.pressedColor,
+    this.highlightedBorderColor,
+    this.pressedBorderColor,
     this.shadows,
     super.onPressed,
     this.onLongPressed,

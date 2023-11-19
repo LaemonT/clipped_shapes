@@ -23,6 +23,9 @@ class BoxScreen extends StatelessWidget {
   Widget build(BuildContext context) => CustomScaffold(
         title: 'ShapedBox',
         body: Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 24.0,
+          runSpacing: 24.0,
           children: [
             ShapedBox.rounded(
               color: Colors.blueAccent,
