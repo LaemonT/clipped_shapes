@@ -14,13 +14,6 @@ class CustomScreen extends StatelessWidget {
   ShapedButtonStyle get _buttonStyle => ShapedCustomButtonStyle(
         highlightedBorderColor: Colors.lightBlue,
         pressedBorderColor: Colors.indigo,
-        shadows: [
-          const BoxShadow(
-            color: Colors.grey,
-            offset: Offset(3, 3),
-            blurRadius: 3,
-          ),
-        ],
         onPressed: () {},
       );
 
@@ -35,6 +28,11 @@ class CustomScreen extends StatelessWidget {
             ShapedButton.rounded(
               buttonStyle: _buttonStyle,
               borderSide: _borderSide,
+              childColorOverwrites: const StateColors(
+                normal: Colors.blue,
+                highlighted: Colors.lightBlue,
+                pressed: Colors.indigo,
+              ),
               child: _buildContent(text: 'ShapedButton.rounded\nExample'),
             ),
             ShapedButton.stadium(

@@ -1,3 +1,3 @@
-## 2.1.0
+## 2.2.0
 
-* Allows custom border color on hovering and pressing.
+* Allows child color overwrites.

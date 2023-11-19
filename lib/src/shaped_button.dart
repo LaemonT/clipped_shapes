@@ -6,8 +6,21 @@ import 'package:flutter/material.dart';
 import 'shaped_box.dart';
 import 'style/shape_styles.dart';
 
+class StateColors {
+  final Color normal;
+  final Color? highlighted;
+  final Color? pressed;
+
+  const StateColors({
+    this.normal = Colors.transparent,
+    this.highlighted,
+    this.pressed,
+  });
+}
+
 class ShapedButton extends StatelessWidget {
   final ShapedButtonStyle? buttonStyle;
+  final StateColors? childColorOverwrites;
   final ShapedBox _shapedBox;
 
   ShapedButton.rounded({
@@ -15,8 +28,9 @@ class ShapedButton extends StatelessWidget {
     BorderRadius? borderRadius,
     BorderSide borderSide = BorderSide.none,
     RoundedCornerStyle cornerStyle = RoundedCornerStyle.circular,
-    required Widget child,
     this.buttonStyle,
+    this.childColorOverwrites,
+    required Widget child,
   }) : _shapedBox = ShapedBox.rounded(
           borderRadius: borderRadius,
           borderSide: borderSide,
@@ -27,8 +41,9 @@ class ShapedButton extends StatelessWidget {
   ShapedButton.stadium({
     super.key,
     BorderSide borderSide = BorderSide.none,
-    required Widget child,
     this.buttonStyle,
+    this.childColorOverwrites,
+    required Widget child,
   }) : _shapedBox = ShapedBox.stadium(
           borderSide: borderSide,
           child: child,
@@ -37,8 +52,9 @@ class ShapedButton extends StatelessWidget {
   ShapedButton.oval({
     super.key,
     BorderSide borderSide = BorderSide.none,
-    required Widget child,
     this.buttonStyle,
+    this.childColorOverwrites,
+    required Widget child,
   }) : _shapedBox = ShapedBox.oval(
           borderSide: borderSide,
           child: child,
@@ -48,8 +64,9 @@ class ShapedButton extends StatelessWidget {
     super.key,
     required double size,
     BorderSide borderSide = BorderSide.none,
-    required Widget child,
     this.buttonStyle,
+    this.childColorOverwrites,
+    required Widget child,
   }) : _shapedBox = ShapedBox.circle(
           size: size,
           borderSide: borderSide,
@@ -64,8 +81,9 @@ class ShapedButton extends StatelessWidget {
     double? arrowOffset,
     BorderRadius? borderRadius,
     BorderSide borderSide = BorderSide.none,
-    required Widget child,
     this.buttonStyle,
+    this.childColorOverwrites,
+    required Widget child,
   }) : _shapedBox = ShapedBox.bubble(
           direction: direction,
           arrowWidth: arrowWidth,
@@ -171,42 +189,61 @@ class ShapedButton extends StatelessWidget {
     final colorHighlightedBorder = style.highlightedBorderColor ?? colorNormalBorder.lighten();
     final colorPressedBorder = style.pressedBorderColor ?? colorNormalBorder.darken();
 
-    final onColorChange = ValueNotifier((colorNormal, colorNormalBorder));
+    final colorNormalChildOverwrite = childColorOverwrites?.normal;
+    final colorHighlightedChildOverwrite = childColorOverwrites?.highlighted;
+    final colorPressedChildOverwrite = childColorOverwrites?.pressed;
+
+    final onColorChange = ValueNotifier((colorNormal, colorNormalBorder, colorNormalChildOverwrite));
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (_) {
-        onColorChange.value = (colorPressed, colorPressedBorder);
+        onColorChange.value = (colorPressed, colorPressedBorder, colorPressedChildOverwrite);
       },
       onTapUp: (_) {
-        onColorChange.value = (colorNormal, colorNormalBorder);
+        onColorChange.value = (colorNormal, colorNormalBorder, colorNormalChildOverwrite);
       },
       onTapCancel: () {
-        onColorChange.value = (colorNormal, colorNormalBorder);
+        onColorChange.value = (colorNormal, colorNormalBorder, colorNormalChildOverwrite);
       },
       onTap: style.onPressed,
       onLongPress: style.onLongPressed,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         onHover: (_) {
-          onColorChange.value = (colorHighlighted, colorHighlightedBorder);
+          onColorChange.value = (colorHighlighted, colorHighlightedBorder, colorHighlightedChildOverwrite);
         },
         onExit: (_) {
-          onColorChange.value = (colorNormal, colorNormalBorder);
+          onColorChange.value = (colorNormal, colorNormalBorder, colorNormalChildOverwrite);
         },
         child: ValueListenableBuilder(
           valueListenable: onColorChange,
-          builder: (BuildContext context, (Color?, Color) value, Widget? child) => AnimatedContainer(
+          builder: (BuildContext context, (Color?, Color, Color?) value, Widget? child) => AnimatedContainer(
             duration: const Duration(milliseconds: 100),
             color: value.$1,
-            child: _shapedBox.copyWith(
-              borderSide: _shapedBox.border.side.copyWith(
-                color: value.$2,
-              ),
-            ),
+            child: _buildResolvedChild(value.$2, value.$3),
           ),
         ),
       ),
     );
   }
+
+  Widget _buildResolvedChild(
+    Color borderColor,
+    Color? childOverwriteColor,
+  ) =>
+      _shapedBox.copyWith(
+        borderSide: _shapedBox.border.side.copyWith(
+          color: borderColor,
+        ),
+        child: childOverwriteColor != null
+            ? ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  childOverwriteColor,
+                  BlendMode.srcIn,
+                ),
+                child: _shapedBox.child,
+              )
+            : null,
+      );
 }

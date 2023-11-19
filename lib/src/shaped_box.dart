@@ -103,11 +103,12 @@ class ShapedBox extends StatelessWidget {
 
   ShapedBox copyWith({
     BorderSide? borderSide,
+    Widget? child,
   }) =>
       ShapedBox._(
         color: color,
         border: border.copyWith(side: borderSide),
         shadows: shadows,
-        child: child,
+        child: child ?? this.child,
       );
 }
