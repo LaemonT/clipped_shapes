@@ -6,21 +6,8 @@ import 'package:flutter/material.dart';
 import 'shaped_box.dart';
 import 'style/shape_styles.dart';
 
-class StateColors {
-  final Color normal;
-  final Color? highlighted;
-  final Color? pressed;
-
-  const StateColors({
-    this.normal = Colors.transparent,
-    this.highlighted,
-    this.pressed,
-  });
-}
-
 class ShapedButton extends StatelessWidget {
   final ShapedButtonStyle? buttonStyle;
-  final StateColors? childColorOverwrites;
   final ShapedBox _shapedBox;
 
   ShapedButton.rounded({
@@ -29,7 +16,6 @@ class ShapedButton extends StatelessWidget {
     BorderSide borderSide = BorderSide.none,
     RoundedCornerStyle cornerStyle = RoundedCornerStyle.circular,
     this.buttonStyle,
-    this.childColorOverwrites,
     required Widget child,
   }) : _shapedBox = ShapedBox.rounded(
           borderRadius: borderRadius,
@@ -42,7 +28,6 @@ class ShapedButton extends StatelessWidget {
     super.key,
     BorderSide borderSide = BorderSide.none,
     this.buttonStyle,
-    this.childColorOverwrites,
     required Widget child,
   }) : _shapedBox = ShapedBox.stadium(
           borderSide: borderSide,
@@ -53,7 +38,6 @@ class ShapedButton extends StatelessWidget {
     super.key,
     BorderSide borderSide = BorderSide.none,
     this.buttonStyle,
-    this.childColorOverwrites,
     required Widget child,
   }) : _shapedBox = ShapedBox.oval(
           borderSide: borderSide,
@@ -65,7 +49,6 @@ class ShapedButton extends StatelessWidget {
     required double size,
     BorderSide borderSide = BorderSide.none,
     this.buttonStyle,
-    this.childColorOverwrites,
     required Widget child,
   }) : _shapedBox = ShapedBox.circle(
           size: size,
@@ -82,7 +65,6 @@ class ShapedButton extends StatelessWidget {
     BorderRadius? borderRadius,
     BorderSide borderSide = BorderSide.none,
     this.buttonStyle,
-    this.childColorOverwrites,
     required Widget child,
   }) : _shapedBox = ShapedBox.bubble(
           direction: direction,
@@ -181,24 +163,24 @@ class ShapedButton extends StatelessWidget {
   Widget _buildCustomStyleButton({
     required ShapedCustomButtonStyle style,
   }) {
-    final colorNormal = style.color;
-    final colorHighlighted = style.highlightedColor ?? colorNormal?.lighten() ?? Colors.black.withOpacity(0.04);
-    final colorPressed = style.pressedColor ?? colorNormal?.darken() ?? Colors.black12;
+    final normalColor = style.color;
+    final highlightedColor = style.highlightedColor ?? normalColor?.lighten() ?? Colors.black.withOpacity(0.04);
+    final pressedColor = style.pressedColor ?? normalColor?.darken() ?? Colors.black12;
 
-    final colorNormalBorder = _shapedBox.border.side.color;
-    final colorHighlightedBorder = style.highlightedBorderColor ?? colorNormalBorder.lighten();
-    final colorPressedBorder = style.pressedBorderColor ?? colorNormalBorder.darken();
+    final borderNormalColor = _shapedBox.border.side.color;
+    final borderHighlightedColor = style.highlightedBorderColor ?? borderNormalColor.lighten();
+    final borderPressedColor = style.pressedBorderColor ?? borderNormalColor.darken();
 
-    final colorNormalChildOverwrite = childColorOverwrites?.normal;
-    final colorHighlightedChildOverwrite = childColorOverwrites?.highlighted;
-    final colorPressedChildOverwrite = childColorOverwrites?.pressed;
+    final childOverwriteNormalColor = style.childOverwriteColor;
+    final childOverwriteHighlightedColor = style.childOverwriteHighlightedColor;
+    final childOverwritePressedColor = style.childOverwritePressedColor;
 
-    final onNormal = (colorNormal, colorNormalBorder, colorNormalChildOverwrite);
-    final onHovering = (colorHighlighted, colorHighlightedBorder, colorHighlightedChildOverwrite);
-    final onPressed = (colorPressed, colorPressedBorder, colorPressedChildOverwrite);
+    final onNormal = (normalColor, borderNormalColor, childOverwriteNormalColor);
+    final onHovering = (highlightedColor, borderHighlightedColor, childOverwriteHighlightedColor);
+    final onPressed = (pressedColor, borderPressedColor, childOverwritePressedColor);
 
     const animationDuration = Duration(milliseconds: 60);
-    final onColorChange = ValueNotifier((colorNormal, colorNormalBorder, colorNormalChildOverwrite));
+    final onColorChange = ValueNotifier((normalColor, borderNormalColor, childOverwriteNormalColor));
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,

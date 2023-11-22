@@ -38,6 +38,9 @@ class ShapedCustomButtonStyle extends ShapedButtonStyle {
   final Color? pressedColor;
   final Color? highlightedBorderColor;
   final Color? pressedBorderColor;
+  final Color? childOverwriteColor;
+  final Color? childOverwriteHighlightedColor;
+  final Color? childOverwritePressedColor;
   final List<BoxShadow>? shadows;
   final VoidCallback? onLongPressed;
 
@@ -47,6 +50,9 @@ class ShapedCustomButtonStyle extends ShapedButtonStyle {
     this.pressedColor,
     this.highlightedBorderColor,
     this.pressedBorderColor,
+    this.childOverwriteColor,
+    this.childOverwriteHighlightedColor,
+    this.childOverwritePressedColor,
     this.shadows,
     super.onPressed,
     this.onLongPressed,
