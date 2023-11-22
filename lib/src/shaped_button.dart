@@ -171,8 +171,8 @@ class ShapedButton extends StatelessWidget {
       MaterialButton(
         padding: EdgeInsets.zero,
         color: style.color,
-        splashColor: style.pressedColor,
-        highlightColor: style.highlightedColor,
+        highlightColor: style.highlightedColor ?? style.color?.lighten() ?? Colors.black12,
+        splashColor: style.pressedColor ?? style.color?.darken() ?? Colors.black12,
         onPressed: style.onPressed,
         onLongPress: style.onLongPressed,
         child: _shapedBox,
@@ -182,7 +182,7 @@ class ShapedButton extends StatelessWidget {
     required ShapedCustomButtonStyle style,
   }) {
     final colorNormal = style.color;
-    final colorHighlighted = style.highlightedColor ?? colorNormal?.lighten() ?? Colors.white10;
+    final colorHighlighted = style.highlightedColor ?? colorNormal?.lighten() ?? Colors.black.withOpacity(0.04);
     final colorPressed = style.pressedColor ?? colorNormal?.darken() ?? Colors.black12;
 
     final colorNormalBorder = _shapedBox.border.side.color;
@@ -193,33 +193,49 @@ class ShapedButton extends StatelessWidget {
     final colorHighlightedChildOverwrite = childColorOverwrites?.highlighted;
     final colorPressedChildOverwrite = childColorOverwrites?.pressed;
 
+    final onNormal = (colorNormal, colorNormalBorder, colorNormalChildOverwrite);
+    final onHovering = (colorHighlighted, colorHighlightedBorder, colorHighlightedChildOverwrite);
+    final onPressed = (colorPressed, colorPressedBorder, colorPressedChildOverwrite);
+
+    const animationDuration = Duration(milliseconds: 60);
     final onColorChange = ValueNotifier((colorNormal, colorNormalBorder, colorNormalChildOverwrite));
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (_) {
-        onColorChange.value = (colorPressed, colorPressedBorder, colorPressedChildOverwrite);
+        onColorChange.value = onPressed;
       },
       onTapUp: (_) {
-        onColorChange.value = (colorNormal, colorNormalBorder, colorNormalChildOverwrite);
+        onColorChange.value = onHovering;
       },
       onTapCancel: () {
-        onColorChange.value = (colorNormal, colorNormalBorder, colorNormalChildOverwrite);
+        onColorChange.value = onHovering;
       },
-      onTap: style.onPressed,
+      onTap: () {
+        // Applies the animation
+        onColorChange.value = onPressed;
+        Future.delayed(
+          animationDuration,
+          () {
+            onColorChange.value = onHovering;
+          },
+        );
+        // Execute the button action
+        style.onPressed?.call();
+      },
       onLongPress: style.onLongPressed,
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         onHover: (_) {
-          onColorChange.value = (colorHighlighted, colorHighlightedBorder, colorHighlightedChildOverwrite);
+          onColorChange.value = onHovering;
         },
         onExit: (_) {
-          onColorChange.value = (colorNormal, colorNormalBorder, colorNormalChildOverwrite);
+          onColorChange.value = onNormal;
         },
         child: ValueListenableBuilder(
           valueListenable: onColorChange,
           builder: (BuildContext context, (Color?, Color, Color?) value, Widget? child) => AnimatedContainer(
-            duration: const Duration(milliseconds: 100),
+            duration: animationDuration,
             color: value.$1,
             child: _buildResolvedChild(value.$2, value.$3),
           ),

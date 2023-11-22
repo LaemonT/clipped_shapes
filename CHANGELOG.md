@@ -1,3 +1,3 @@
-## 2.2.0
+## 2.2.1
 
-* Allows child color overwrites.
+* Fixes the animation and color of the custom button.
