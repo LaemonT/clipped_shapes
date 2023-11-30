@@ -1,3 +1,3 @@
-## 2.2.2
+## 2.2.3
 
-* Child overwrite only available for the custom button.
+* Fixes the color animation on rapid state changes.

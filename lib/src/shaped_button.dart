@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:clipped_shapes/src/ext/color_ext.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -182,6 +184,8 @@ class ShapedButton extends StatelessWidget {
     const animationDuration = Duration(milliseconds: 60);
     final onColorChange = ValueNotifier((normalColor, borderNormalColor, childOverwriteNormalColor));
 
+    bool hovering = false;
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (_) {
@@ -191,7 +195,7 @@ class ShapedButton extends StatelessWidget {
         onColorChange.value = onHovering;
       },
       onTapCancel: () {
-        onColorChange.value = onHovering;
+        onColorChange.value = hovering ? onHovering : onNormal;
       },
       onTap: () {
         // Applies the animation
@@ -199,7 +203,7 @@ class ShapedButton extends StatelessWidget {
         Future.delayed(
           animationDuration,
           () {
-            onColorChange.value = onHovering;
+            onColorChange.value = hovering ? onHovering : onNormal;
           },
         );
         // Execute the button action
@@ -209,9 +213,11 @@ class ShapedButton extends StatelessWidget {
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         onHover: (_) {
+          hovering = true;
           onColorChange.value = onHovering;
         },
         onExit: (_) {
+          hovering = false;
           onColorChange.value = onNormal;
         },
         child: ValueListenableBuilder(
